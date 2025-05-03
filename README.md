@@ -44,3 +44,5 @@ flask --app ciobrain run --debug
 ```
 
 The app should be accessible at http://localhost:5000
+
+export GOOGLE_CLOUD_PROJECT=ascendant-ridge-457916-g2
