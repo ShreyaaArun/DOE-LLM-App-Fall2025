@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "doetestllm"
-  }
+    "default": "doe-oracle"
+  },
+  "targets": {},
+  "etags": {}
 }
