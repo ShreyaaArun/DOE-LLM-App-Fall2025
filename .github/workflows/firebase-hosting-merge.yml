@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-'on':
+on:
   push:
     branches:
       - live-version
@@ -15,18 +15,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Or your preferred/required Node.js version
+          node-version: '20' # Use Node.js 20
       - name: Install Dependencies
-        run: npm ci # 'ci' is generally preferred over 'install' in CI environments
-        working-directory: ./ciobrain-frontend # Run install in the frontend directory
+        run: npm ci
+        working-directory: ./ciobrain-frontend # Specify working directory
       - name: Build Frontend
         run: npm run build
-        working-directory: ./ciobrain-frontend # Run build in the frontend directory
-      - name: Deploy to Firebase Hosting
+        working-directory: ./ciobrain-frontend # Specify working directory
+      - name: Deploy to Firebase Hosting Live Channel
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOETESTLLM }}'
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOE_ORACLE }}
           channelId: live
-          projectId: doetestllm
-          entryPoint: ./ciobrain-frontend # Specify the directory containing firebase.json and the 'dist' folder
+          projectId: doe-oracle
+          entryPoint: ./ciobrain-frontend # Specify entry point
