@@ -1,36 +1,35 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from vertex_search import VertexSearchClient
-import traceback # Import traceback
-from dotenv import load_dotenv # Import load_dotenv
-import os # Import os
+import traceback
+from dotenv import load_dotenv
+import os
 
-# Load environment variables from .env file located in the parent directory
-dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env') # Construct path to .env in parent dir
+# Load environment variables from .env in the parent directory
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 app = Flask(__name__)
 
-# Configure CORS to allow requests from your deployed frontend URL
-# You might want to allow localhost too for local development
-frontend_url = "https://doe-oracle.web.app"
-local_frontend_url = "http://localhost:5173" # Or your local dev port
-# Apply CORS more explicitly
-CORS(app, origins=[frontend_url, local_frontend_url], methods=["GET", "POST", "OPTIONS"], headers=["Content-Type"], supports_credentials=True)
+# CORS configuration to allow localhost and production frontend
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5174", "https://doe-oracle.web.app"]}})
 
-# Initialize the Vertex Search client
-print("Initializing VertexSearchClient...") # Log initialization
+# Initialize VertexSearchClient
+print("Initializing VertexSearchClient...")
 try:
     vertex_client = VertexSearchClient()
-    print("VertexSearchClient initialized successfully.") # Log success
+    print("VertexSearchClient initialized successfully.")
 except Exception as e:
-    print(f"!!! Error initializing VertexSearchClient: {e}") # Log init error
+    print(f"!!! Error initializing VertexSearchClient: {e}")
     traceback.print_exc()
-    vertex_client = None # Set to None if init fails
+    vertex_client = None
 
-@app.route('/api/search', methods=['POST'])
+@app.route('/api/search', methods=['POST', 'OPTIONS'])
 def search():
-    print("\n--- Received request for /api/search ---") # Log request start
+    if request.method == 'OPTIONS':
+        return '', 204
+
+    print("\n--- Received request for /api/search ---")
     if not vertex_client:
         print("Error: VertexSearchClient not initialized.")
         return jsonify({"error": "Search client failed to initialize"}), 500
@@ -41,25 +40,27 @@ def search():
         return jsonify({"error": "Invalid request body, expected JSON"}), 400
 
     query = data.get('query')
-    print(f"Query received: {query}") # Log query
+    print(f"Query received: {query}")
 
     if not query:
-        print("Error: Query parameter is missing.") # Log missing query
+        print("Error: Query parameter is missing.")
         return jsonify({"error": "Query is required"}), 400
 
     try:
-        print("Calling vertex_client.search...") # Log before calling search
+        print("Calling vertex_client.search...")
         results = vertex_client.search(query)
-        print(f"Search successful. Results: {results}") # Log successful results
+        print(f"Search successful. Results: {results}")
         return jsonify(results)
     except Exception as e:
-        print(f"!!! Error during vertex_client.search: {e}") # Log the exception
-        traceback.print_exc() # Print the full traceback to the console
+        print(f"!!! Error during vertex_client.search: {e}")
+        traceback.print_exc()
         return jsonify({"error": "An error occurred during search.", "details": str(e)}), 500
 
-# --- Add similar logging to /api/search-and-answer if you use it ---
-@app.route('/api/search-and-answer', methods=['POST'])
+@app.route('/api/search-and-answer', methods=['POST', 'OPTIONS'])
 def search_and_answer():
+    if request.method == 'OPTIONS':
+        return '', 204
+
     print("\n--- Received request for /api/search-and-answer ---")
     if not vertex_client:
         print("Error: VertexSearchClient not initialized.")
@@ -85,7 +86,7 @@ def search_and_answer():
     except Exception as e:
         print(f"!!! Error during vertex_client.search_and_answer: {e}")
         traceback.print_exc()
-        return jsonify({"error": "An error occurred during search-and-answer.", "details": str(e)}), 500 
+        return jsonify({"error": "An error occurred during search-and-answer.", "details": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

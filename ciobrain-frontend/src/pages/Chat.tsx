@@ -51,7 +51,7 @@ const Chat = () => {
 
     try {
       // Use environment variable for backend URL
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001'; // Fallback for local dev
+      const backendUrl = import.meta.env.VITE_API_URL || 'https://doe-oracle-llm.onrender.com'; // Fallback for local dev
       const response = await fetch(`${backendUrl}/api/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
