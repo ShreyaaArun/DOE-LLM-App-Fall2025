@@ -85,9 +85,8 @@ def search_and_answer():
     except Exception as e:
         print(f"!!! Error during vertex_client.search_and_answer: {e}")
         traceback.print_exc()
-        return jsonify({"error": "An error occurred during search-and-answer.", "details": str(e)}), 500
+        return jsonify({"error": "An error occurred during search-and-answer.", "details": str(e)}), 500 
 
-if __name__ == '__main__':
-    print("Starting Flask server...")
-    # Changed port from 5000 to 5001 to avoid potential conflict
-    app.run(debug=True, port=5001)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
