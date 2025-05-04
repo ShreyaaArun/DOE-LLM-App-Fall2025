@@ -16,4 +16,4 @@ requests==2.31.0
 python-dotenv
 gunicorn
 google-cloud-discoveryengine>=0.5.0
-google-cloud-vertex-ai
+google-cloud-aiplatform>=1.38.0
