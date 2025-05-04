@@ -10,9 +10,13 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env') # Construct 
 load_dotenv(dotenv_path=dotenv_path)
 
 app = Flask(__name__)
-# More specific CORS configuration:
-# Allow requests specifically from your frontend origin
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+
+# Configure CORS to allow requests from your deployed frontend URL
+# You might want to allow localhost too for local development
+frontend_url = "https://doe-oracle.web.app"
+local_frontend_url = "http://localhost:5173" # Or your local dev port
+# Apply CORS more explicitly
+CORS(app, origins=[frontend_url, local_frontend_url], methods=["GET", "POST", "OPTIONS"], headers=["Content-Type"], supports_credentials=True)
 
 # Initialize the Vertex Search client
 print("Initializing VertexSearchClient...") # Log initialization
