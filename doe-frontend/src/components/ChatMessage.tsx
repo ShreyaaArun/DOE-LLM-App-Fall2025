@@ -29,7 +29,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, evidence, isUser }) 
               : 'bg-gray-800 text-gray-200'
           }`}
         >
-          <p className="text-sm">{message}</p>
+          <p className="text-base">{message}</p>
           {evidence && evidence.length > 0 && (
             <div className="mt-2 border-t border-gray-600 pt-2">
               <h4 className="text-xs font-semibold mb-1">Evidence:</h4>

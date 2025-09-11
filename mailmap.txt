@@ -1,9 +1,0 @@
-# Format: Preferred Name <Preferred Email> Old Name <Old Email>
-
-# Map all SPWilliford variations to mloganu717
-mloganu717 <sugarglider717@gmail.com> SPWilliford <74472505+SPWilliford@users.noreply.github.com>
-mloganu717 <sugarglider717@gmail.com> SPWilliford <spwilliford@protonmail.com> # <-- Changed "Sam Williford" to "SPWilliford" here
-
-# Consolidate your own variations to mloganu717
-mloganu717 <sugarglider717@gmail.com> Logan <138610591+sugarglider717@users.noreply.github.com>
-mloganu717 <sugarglider717@gmail.com> sugarglider717 <sugarglider717@gmail.com>

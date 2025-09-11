@@ -1,5 +1,5 @@
 """
-ResearchExpert class for handling RAG queries with citations
+DOEOracle class for handling RAG queries with citations from Dr. Wong's research
 """
 
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
@@ -11,8 +11,8 @@ from langchain.prompts import PromptTemplate
 import os
 from typing import List, Optional
 
-class ResearchExpert:
-    def __init__(self, model_name: str = "llama3.2"):
+class DOEOracle:
+    def __init__(self, model_name: str = "CombinatorialExpert"):
         self.model_name = model_name
         self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
         self.llm = OllamaLLM(model=model_name)
@@ -20,34 +20,22 @@ class ResearchExpert:
         self.qa_chain = None
         self.conversation_history = []
         
-        # Define a more specific prompt template with citation requirements
+        # DOE Oracle prompt template - specialized for Dr. Wong's research
         self.prompt_template = """
-CRITICAL RULES:
-1. ALWAYS check paper abstracts first for definitions and key concepts within the provided Context.
-2. ONLY state what is EXPLICITLY mentioned in the Context (the provided research paper excerpts) - no exceptions and no inferences from outside the Context.
-3. DO NOT make ANY assumptions, inferences, or speculations - even if they seem obvious. Stick strictly to the Context.
-4. If asked what something stands for or means, ONLY provide the definition if it's EXPLICITLY stated in the Context with phrases like "X stands for Y" or "X is defined as Y".
-5. DO NOT define or expand ANY terms or acronyms unless the Context explicitly does so.
-6. If information is not directly stated in the Context, respond with "The provided context does not explicitly state [specific detail asked about]."
-7. Use exact terminology from the Context - never substitute or rephrase terms.
-8. NEVER use hedging language like "likely", "may", "probably", "could have", etc.
-9. NEVER speculate about authors' motivations or reasoning unless explicitly stated in the Context.
-10. If asked about system purposes or definitions, ONLY provide what the Context explicitly states.
-11. ONLY provide 3 sentences MAXIMUM in your response.
-12. ONLY use definitions from the Context, never make up your own.
-13. When asked "according to the research papers" or similar phrases, ONLY use terminology, definitions, and explanations EXACTLY as they appear in the Context - no external knowledge allowed.
-14. When asked about a term or concept, ALWAYS check the abstract sections within the Context first before saying it's not defined.
-15. You MUST end your response by citing the specific source document and page number from the Context that supports your answer, formatted as: "[Source: file_name.pdf, Page X]". If multiple sources support the answer, cite the most direct one. If no single source directly supports the *entire* answer but pieces come from the context, state "Based on the provided context."
-16. If you are stating that information is not available, you do not need to provide a source citation.
+You are the DOE Oracle, a combinatorial testing expert. Answer based ONLY on the provided Context from Dr. Wong's research papers.
+
+RULES:
+1. Use ONLY information explicitly stated in the Context
+2. If information is not in the Context, say "The provided context does not explicitly state this"
+3. Keep responses to 2-3 sentences maximum
+4. End with source citation: [Source: filename, Page X]
 
 Context:
 {context}
 
 Question: {question}
 
-Remember: You must ONLY use information from the provided Context documents above. If you're not 100% certain something is explicitly stated in the Context, say "The provided context does not explicitly state this." Follow all CRITICAL RULES.
-
-Response:"""
+Answer:"""
         
     def load_papers(self, paper_paths: List[str]):
         """Load and process research papers from PDF files."""
@@ -61,8 +49,8 @@ Response:"""
         
         # Split documents into chunks with more context
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=2000,
-            chunk_overlap=400,
+            chunk_size=500,
+            chunk_overlap=100,
             separators=["\nAbstract", "\n\n", "\n", ".", "!", "?", ",", " ", ""]  # Added Abstract as first separator
         )
         splits = text_splitter.split_documents(documents)
@@ -87,7 +75,7 @@ Response:"""
             retriever=self.vector_store.as_retriever(
                 search_type="similarity",
                 search_kwargs={
-                    "k": 20  # Increased from 8 to get more comprehensive coverage
+                    "k": 1  # Single most relevant chunk for speed
                 }
             ),
             chain_type_kwargs={
@@ -171,12 +159,12 @@ Response:"""
             retriever=self.vector_store.as_retriever(
                 search_type="similarity",
                 search_kwargs={
-                    "k": 20  # Changed from 15 to 20 for consistency
+                    "k": 1
                 }
             ),
             chain_type_kwargs={
                 "prompt": prompt,
-                "verbose": True  # Help with debugging
+                "verbose": True
             },
             return_source_documents=True
         )

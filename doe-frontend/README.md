@@ -68,4 +68,4 @@ The frontend communicates with Google Cloud Search through our Express API serve
 ## Environment Variables
 
 For production, you may want to set these variables:
-- `PORT`: Port for the Express server (default: 5001)
+- `PORT`: Port for the Express server (default: 5000)

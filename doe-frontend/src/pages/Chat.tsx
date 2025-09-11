@@ -21,21 +21,21 @@ interface SearchResultItem {
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [googleSearchInput, setGoogleSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleGoogleSearch = async (query?: string) => {
-    const userQuery = query || googleSearchInput;
+  const handleSearch = async (query?: string) => {
+    const userQuery = query || searchInput;
     if (!userQuery.trim()) return;
 
     // Add user message immediately
     setMessages(prev => [...prev, { sender: 'user', text: userQuery, originalQuery: userQuery }]);
 
     // Clear the input field immediately after adding the user message
-    setGoogleSearchInput('');
+    setSearchInput('');
 
     setLoading(true);
     setError(null);
@@ -51,7 +51,7 @@ const Chat = () => {
 
     try {
       // Use environment variable for backend URL
-      const backendUrl = import.meta.env.VITE_API_URL || 'https://doe-oracle-llm.onrender.com'; // Fallback for local dev
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'; // Fallback for local dev
       const response = await fetch(`${backendUrl}/api/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,13 +173,13 @@ const Chat = () => {
                   <div className="bg-gray-800 p-4 rounded-lg border border-blue-600/50 flex-1">
                     {/* Conditionally render the text paragraph only if message.text is not empty */}
                     {message.text && (
-                      <p className={`text-sm mb-2 ${message.isSearchResult ? 'font-semibold text-blue-300' : 'text-gray-200'}`}>
+                      <p className={`text-base mb-2 ${message.isSearchResult ? 'font-semibold text-blue-300' : 'text-gray-200'}`}>
                         {message.text}
                       </p>
                     )}
                     {/* Display Summary if available */}
                     {message.searchSummary && (
-                      <p className="text-sm text-gray-200 mb-3 italic border-l-2 border-blue-400 pl-2">
+                      <p className="text-base text-gray-200 mb-3 italic border-l-2 border-blue-400 pl-2">
                         {message.searchSummary}
                       </p>
                     )}
@@ -259,21 +259,21 @@ const Chat = () => {
           <input
             ref={inputRef}
             type="text"
-            value={googleSearchInput}
-            onChange={(e) => setGoogleSearchInput(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Ask DOE anything..." // Slightly changed placeholder
             className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500" // Added placeholder color
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) { // Allow shift+enter for newline if needed later
                 e.preventDefault(); // Prevent default newline on enter
-                handleGoogleSearch(googleSearchInput);
+                handleSearch(searchInput);
               }
             }}
             disabled={loading}
           />
           <button
-            onClick={() => handleGoogleSearch(googleSearchInput)}
-            disabled={loading || !googleSearchInput.trim()}
+            onClick={() => handleSearch(searchInput)}
+            disabled={loading || !searchInput.trim()}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200" // Added transition
           >
             {loading ? (
