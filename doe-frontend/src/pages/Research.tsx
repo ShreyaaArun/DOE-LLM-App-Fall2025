@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 
 const Research = () => (
-  <div className="max-w-4xl mx-auto px-4 py-8">
+  <div className="max-w-6xl mx-auto px-2 py-4">
     <motion.h1 
-      className="text-4xl font-bold mb-8 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
+      className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 lg:mb-8 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -11,7 +11,7 @@ const Research = () => (
     </motion.h1>
 
     <motion.div 
-      className="space-y-8"
+      className="space-y-6 lg:space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}

@@ -4,22 +4,22 @@ import { motion } from 'framer-motion';
 const About: React.FC = () => {
   return (
     <motion.div 
-      className="space-y-12"
+      className="space-y-8 lg:space-y-12"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="text-center">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
           About DOE
         </h1>
-        <p className="mt-4 text-lg text-white/80 max-w-3xl mx-auto">
+        <p className="mt-4 text-base md:text-lg lg:text-xl text-white/80 max-w-5xl mx-auto">
           Pioneering the future of combinatorial testing and software quality assurance.
         </p>
       </div>
 
       <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
@@ -128,23 +128,6 @@ const About: React.FC = () => {
         </div>
       </motion.div>
 
-      <div className="mt-12 text-center">
-        <h2 className="text-2xl font-bold text-white mb-6">Our Impact</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <div className="text-4xl font-bold text-white mb-2">100+</div>
-            <p className="text-white/70">Research Papers Published</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <div className="text-4xl font-bold text-white mb-2">50+</div>
-            <p className="text-white/70">Industry Partnerships</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <div className="text-4xl font-bold text-white mb-2">1000+</div>
-            <p className="text-white/70">Projects Impacted</p>
-          </div>
-        </div>
-      </div>
     </motion.div>
   );
 };

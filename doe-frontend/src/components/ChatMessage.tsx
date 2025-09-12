@@ -31,15 +31,20 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, evidence, isUser }) 
         >
           <p className="text-base">{message}</p>
           {evidence && evidence.length > 0 && (
-            <div className="mt-2 border-t border-gray-600 pt-2">
-              <h4 className="text-xs font-semibold mb-1">Evidence:</h4>
-              <ul className="list-disc list-inside space-y-1">
+            <div className="mt-3 border-t border-gray-600 pt-3">
+              <h4 className="text-sm font-semibold mb-2 text-blue-300">📚 Source Evidence:</h4>
+              <div className="space-y-2">
                 {evidence.map((item, index) => (
-                  <li key={index} className="text-xs">
-                    "{item.quote}" (Source: {item.source}, Page: {item.page})
-                  </li>
+                  <div key={index} className="bg-gray-700 rounded p-2 text-xs">
+                    <div className="italic text-gray-300 mb-1">
+                      "{item.quote}"
+                    </div>
+                    <div className="text-blue-400 font-medium">
+                      📄 {item.source} • Page {item.page}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </div>

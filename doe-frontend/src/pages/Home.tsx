@@ -103,20 +103,20 @@ function TestMatrix() {
 const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center gap-8">
-          <div className="flex items-center justify-center gap-6">
+      <div className="container mx-auto px-6 py-8">
+        <div className="flex flex-col items-center justify-center gap-6">
+          <div className="flex items-center justify-center gap-8">
             <motion.img
               src="/images/doe-logo-final.png"
               alt="DOE Logo"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="w-24 h-24 md:w-32 md:h-32"
+              className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32"
             />
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-7xl md:text-8xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500">
+              className="text-6xl md:text-7xl lg:text-8xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500">
               DOE
             </motion.h1>
           </div>
@@ -125,11 +125,11 @@ const Home = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl text-center text-gray-300 max-w-2xl">
+            className="text-lg md:text-xl lg:text-2xl text-center text-gray-300 max-w-4xl">
             Your intelligent companion for combinatorial testing and software quality assurance
           </motion.p>
 
-          <div className="h-[400px] w-full max-w-2xl rounded-lg overflow-hidden bg-gradient-to-b from-gray-800/50 to-gray-900/50 backdrop-blur-xl">
+          <div className="h-[350px] md:h-[400px] lg:h-[450px] w-full max-w-4xl rounded-lg overflow-hidden bg-gradient-to-b from-gray-800/50 to-gray-900/50 backdrop-blur-xl">
             <Canvas camera={{ position: [0, 0, 12] }}>
               <ambientLight intensity={0.4} />
               <pointLight position={[10, 10, 10]} intensity={0.8} />

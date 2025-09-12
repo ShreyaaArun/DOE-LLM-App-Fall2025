@@ -8,35 +8,84 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.prompts import PromptTemplate
+from langchain.schema import Document
 import os
+import re
 from typing import List, Optional
 
 class DOEOracle:
     def __init__(self, model_name: str = "CombinatorialExpert"):
         self.model_name = model_name
         self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
-        self.llm = OllamaLLM(model=model_name)
+        self.llm = OllamaLLM(
+            model=model_name,
+            temperature=0.2  # Balanced for professional consistency with some variation
+        )
         self.vector_store = None
-        self.qa_chain = None
         self.conversation_history = []
         
         # DOE Oracle prompt template - specialized for Dr. Wong's research
-        self.prompt_template = """
-You are the DOE Oracle, a combinatorial testing expert. Answer based ONLY on the provided Context from Dr. Wong's research papers.
+        self.prompt_template = """You are the DOE Oracle, a distinguished combinatorial testing expert who provides comprehensive, professional analysis based on Dr. Wong's research papers. Answer based ONLY on the provided Context from Dr. Wong's research papers.
+
+COMMUNICATION STYLE:
+- Maintain a formal, professional, and academic tone
+- Provide detailed explanations with specific findings from the research
+- Use precise terminology and technical language appropriate for experts
+- Structure responses with clear examples and empirical evidence
+- Present findings objectively and systematically
+- Include relevant metrics, percentages, and comparative data when available
 
 RULES:
 1. Use ONLY information explicitly stated in the Context
-2. If information is not in the Context, say "The provided context does not explicitly state this"
-3. Keep responses to 2-3 sentences maximum
-4. End with source citation: [Source: filename, Page X]
+2. If information is not in the Context, state "The provided research does not address this specific aspect"
+3. Provide comprehensive responses of 3-5 sentences with detailed analysis
+4. Do NOT include any line numbers (like 59| or 60|) in your response
+5. Clean up any formatting artifacts from the source text
+6. MANDATORY: Copy the exact citation shown after CITATION: and include it at the end of your response
 
-Context:
+Context with Source Information:
 {context}
 
 Question: {question}
 
 Answer:"""
         
+    def _clean_document_text(self, text: str) -> str:
+        """Clean document text by removing line numbers and formatting artifacts."""
+        # Remove line numbers at the start of lines (e.g., "59|", "123|")
+        text = re.sub(r'^\s*\d+\|', '', text, flags=re.MULTILINE)
+        
+        # Remove excessive whitespace
+        text = re.sub(r'\s+', ' ', text)
+        
+        # Clean up common PDF artifacts
+        text = re.sub(r'–', '-', text)  # Replace em-dash with regular dash
+        text = re.sub(r'["""]', '"', text)  # Normalize quotes
+        
+        return text.strip()
+    
+    def _format_context_with_metadata(self, docs: List[Document]) -> str:
+        """Format context including source metadata for proper citations."""
+        formatted_chunks = []
+        for doc in docs:
+            # Get clean source name
+            clean_source = doc.metadata.get('clean_source')
+            if clean_source:
+                source_name = clean_source
+            else:
+                source_name = os.path.basename(doc.metadata.get('source', 'Unknown')).replace('.pdf', '')
+            
+            # Convert 0-based page number to 1-based for human readability
+            page_num = doc.metadata.get('page', 'unknown')
+            if isinstance(page_num, int):
+                page_num = page_num + 1  # Convert 0-based to 1-based
+            
+            # Format the chunk with source info prominently displayed
+            chunk_text = f"{doc.page_content}\n\nCITATION: [Source: {source_name}, Page {page_num}]"
+            formatted_chunks.append(chunk_text)
+        
+        return "\n\n".join(formatted_chunks)
+    
     def load_papers(self, paper_paths: List[str]):
         """Load and process research papers from PDF files."""
         documents = []
@@ -45,7 +94,15 @@ Answer:"""
                 raise FileNotFoundError(f"Paper not found: {paper_path}")
             
             loader = PyPDFLoader(paper_path)
-            documents.extend(loader.load())
+            loaded_docs = loader.load()
+            
+            # Clean the text content of each document
+            for doc in loaded_docs:
+                doc.page_content = self._clean_document_text(doc.page_content)
+                # Ensure we have a clean filename for citations
+                doc.metadata['clean_source'] = os.path.basename(paper_path).replace('.pdf', '')
+            
+            documents.extend(loaded_docs)
         
         # Split documents into chunks with more context
         text_splitter = RecursiveCharacterTextSplitter(
@@ -62,46 +119,32 @@ Answer:"""
             persist_directory="instance/vector_store"
         )
         
-        # Create custom prompt
+        # Vector store is ready for custom querying with metadata
+    
+    def query(self, question: str) -> str:
+        """Query the research expert with a question."""
+        if not self.vector_store:
+            raise ValueError("No papers loaded. Please load papers first.")
+        
+        # Retrieve relevant documents (get more context for richer responses)
+        retriever = self.vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3}  # Get more context for detailed explanations
+        )
+        source_docs = retriever.invoke(question)
+        
+        # Format context with metadata
+        context_with_metadata = self._format_context_with_metadata(source_docs)
+        
+        # Create prompt with formatted context
         prompt = PromptTemplate(
             template=self.prompt_template,
             input_variables=["context", "question"]
         )
         
-        # Create QA chain with improved settings
-        self.qa_chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=self.vector_store.as_retriever(
-                search_type="similarity",
-                search_kwargs={
-                    "k": 1  # Single most relevant chunk for speed
-                }
-            ),
-            chain_type_kwargs={
-                "prompt": prompt,
-                "verbose": True  # Help with debugging
-            },
-            return_source_documents=True
-        )
-    
-    def query(self, question: str) -> str:
-        """Query the research expert with a question."""
-        if not self.qa_chain:
-            raise ValueError("No papers loaded. Please load papers first.")
-        
-        # # Format conversation history (Temporarily disabled for focused context adherence)
-        # history = "\\n".join([f"Q: {q}\\nA: {a}" for q, a in self.conversation_history[-3:]])
-        # 
-        # # Combine history with current question
-        # full_question = f"{history}\\n\\nCurrent question: {question}" if self.conversation_history else question
-        
-        # Use the question directly without history
-        full_question = question
-        
-        response = self.qa_chain.invoke({"query": full_question})
-        result = response["result"]
-        source_docs = response["source_documents"]
+        # Get response from LLM
+        formatted_prompt = prompt.format(context=context_with_metadata, question=question)
+        result = self.llm.invoke(formatted_prompt)
         
         # # Get the most relevant source document (Removed manual citation appending - relying on LLM prompt)
         # if source_docs:
@@ -117,13 +160,29 @@ Answer:"""
         evidence = []
         if source_docs:
             primary_doc = source_docs[0]
-            source_file = os.path.basename(primary_doc.metadata.get('source', ''))
+            # Use clean source name if available, otherwise use basename
+            clean_source = primary_doc.metadata.get('clean_source')
+            if clean_source:
+                source_file = clean_source
+            else:
+                source_file = os.path.basename(primary_doc.metadata.get('source', '')).replace('.pdf', '')
+            
+            # Convert 0-based page number to 1-based for human readability
             page_num = primary_doc.metadata.get('page', 'unknown')
+            if isinstance(page_num, int):
+                page_num = page_num + 1  # Convert 0-based to 1-based
+            
+            # Clean the quote content as well
+            clean_quote = self._clean_document_text(primary_doc.page_content)
+            # Truncate quote if too long for display
+            if len(clean_quote) > 200:
+                clean_quote = clean_quote[:200] + "..."
+            
             evidence.append({
-                'quote': primary_doc.page_content,
+                'quote': clean_quote,
                 'source': source_file,
                 'page': str(page_num),
-                'supports': 'Retrieved Context' # Changed label slightly
+                'supports': 'Source Evidence'
             })
 
         # Update conversation history
@@ -145,26 +204,4 @@ Answer:"""
         self.vector_store = Chroma(
             persist_directory="instance/vector_store",
             embedding_function=self.embeddings
-        )
-        
-        # Recreate the prompt and QA chain
-        prompt = PromptTemplate(
-            template=self.prompt_template,
-            input_variables=["context", "question"]
-        )
-        
-        self.qa_chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=self.vector_store.as_retriever(
-                search_type="similarity",
-                search_kwargs={
-                    "k": 1
-                }
-            ),
-            chain_type_kwargs={
-                "prompt": prompt,
-                "verbose": True
-            },
-            return_source_documents=True
         )

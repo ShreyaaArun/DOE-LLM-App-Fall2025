@@ -1,6 +1,6 @@
 const ContactUs = () => (
-  <div className="space-y-4 max-w-lg mx-auto">
-    <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">Contact Us</h1>
+  <div className="space-y-6 max-w-2xl mx-auto px-4">
+    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent text-center">Contact Us</h1>
     <p className="text-gray-300 mb-6">
       Have questions about our testing solutions or need technical support? We'd love to hear from you!
     </p>

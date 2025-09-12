@@ -12,7 +12,7 @@ function App() {
     <Router>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
         <Navbar />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow container mx-auto px-6 lg:px-8 py-6 max-w-7xl">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />

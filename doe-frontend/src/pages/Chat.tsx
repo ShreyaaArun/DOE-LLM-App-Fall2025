@@ -141,12 +141,12 @@ const Chat = () => {
   }, [loading]);
 
   return (
-    <div className="flex flex-col max-w-3xl mx-auto px-4 py-6 h-[80vh]">
+    <div className="flex flex-col max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-4 min-h-screen">
       {/* Title removed as it was empty */}
       {/* <motion.h1 ... /> */}
 
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-xl border border-violet-900/30 shadow-lg shadow-violet-900/20 p-3 mb-4 overflow-hidden">
-        <div className="overflow-y-auto pr-2 flex-1 space-y-3">
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-xl border border-violet-900/30 shadow-lg shadow-violet-900/20 p-3 sm:p-6 mb-4 sm:mb-6 overflow-hidden">
+        <div className="overflow-y-auto pr-2 sm:pr-4 flex-1 space-y-4 sm:space-y-6">
           <AnimatePresence>
             {messages.map((message, index) => (
               message.sender === 'user' ? (
@@ -155,9 +155,9 @@ const Chat = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="flex justify-end my-2"
+                  className="flex justify-end mb-4"
                 >
-                  <div className="bg-purple-600 text-white p-3 rounded-lg max-w-xs sm:max-w-md">
+                  <div className="bg-purple-600 text-white p-3 sm:p-4 rounded-lg max-w-xs sm:max-w-lg md:max-w-2xl">
                     {message.text}
                   </div>
                 </motion.div>
@@ -167,13 +167,13 @@ const Chat = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="flex items-start space-x-3 my-2"
+                  className="flex items-start space-x-4 mb-6"
                 >
                   <img src={doeLogo} alt="DOE Bot" className="h-6 w-6 mt-1 flex-shrink-0 rounded-full" /> {/* Added rounded-full */}
-                  <div className="bg-gray-800 p-4 rounded-lg border border-blue-600/50 flex-1">
+                  <div className="bg-gray-800 p-3 sm:p-5 rounded-lg border border-blue-600/50 flex-1">
                     {/* Conditionally render the text paragraph only if message.text is not empty */}
                     {message.text && (
-                      <p className={`text-base mb-2 ${message.isSearchResult ? 'font-semibold text-blue-300' : 'text-gray-200'}`}>
+                      <p className={`text-base mb-4 leading-relaxed ${message.isSearchResult ? 'font-semibold text-blue-300' : 'text-gray-200'}`}>
                         {message.text}
                       </p>
                     )}
@@ -254,15 +254,15 @@ const Chat = () => {
       </div>
 
       {/* Input Area */}
-      <div className="mt-auto p-3 bg-gray-800 rounded-xl border border-blue-500/30"> {/* Changed mt-4 to mt-auto */}
-        <div className="flex space-x-2">
+      <div className="mt-auto p-3 sm:p-5 bg-gray-800 rounded-xl border border-blue-500/30"> {/* Changed mt-4 to mt-auto */}
+        <div className="flex space-x-2 sm:space-x-3">
           <input
             ref={inputRef}
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Ask DOE anything..." // Slightly changed placeholder
-            className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500" // Added placeholder color
+            className="flex-1 bg-gray-700 text-white rounded-lg px-3 sm:px-5 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-sm sm:text-base" // Added placeholder color
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) { // Allow shift+enter for newline if needed later
                 e.preventDefault(); // Prevent default newline on enter
@@ -274,7 +274,7 @@ const Chat = () => {
           <button
             onClick={() => handleSearch(searchInput)}
             disabled={loading || !searchInput.trim()}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200" // Added transition
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm sm:text-base" // Added transition
           >
             {loading ? (
               <svg className="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -285,6 +285,23 @@ const Chat = () => {
           </button>
         </div>
          {error && <p className="text-red-500 text-xs mt-2 px-1">{error}</p>} {/* Added padding */}
+      </div>
+
+      {/* AI Disclaimer */}
+      <div className="mt-8 p-5 bg-yellow-900/20 border border-yellow-600/30 rounded-lg">
+        <div className="flex items-start space-x-3">
+          <svg className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          <div>
+            <h3 className="text-sm font-semibold text-yellow-400 mb-2">Important Disclaimer</h3>
+            <p className="text-sm text-yellow-200/80 leading-relaxed">
+              DOE is an AI research assistant that may occasionally generate inaccurate, incomplete, or misleading information. 
+              Always verify important information and consult original research papers for critical decisions. 
+              Responses are based solely on Dr. Wong's available research papers and may not reflect the complete state of the field.
+            </p>
+          </div>
+        </div>
       </div>
 
     </div>
