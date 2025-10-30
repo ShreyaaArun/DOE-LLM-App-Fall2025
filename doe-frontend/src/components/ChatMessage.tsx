@@ -14,6 +14,8 @@ interface ChatMessageProps {
   isUser: boolean;
 }
 
+//<SpeakerWaveIcon className="h-8 w-8" />
+
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, evidence, isUser }) => {
   return (
     <motion.div
