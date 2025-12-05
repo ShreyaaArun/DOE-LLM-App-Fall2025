@@ -1,266 +1,186 @@
 # UT Dallas Software Engineering Capstone Project
-## Group 4 - Spring 2025
+## Group 8 – Fall 2025
 
-# DOE Oracle LLM - Combinatorial Testing Research Assistant
+# DOE Oracle LLM – Combinatorial Testing Research Assistant
 
-> **A specialized AI system for querying Dr. Wong's combinatorial testing research papers**
+> **A specialized AI system for querying Dr. Wong’s combinatorial testing research papers**
 
 ## Overview
 
-The **DOE Oracle LLM** is an intelligent research assistant that uses **Retrieval-Augmented Generation (RAG)** to answer questions about combinatorial testing based exclusively on Dr. Wong's research papers. It combines a custom fine-tuned model with a vector database of research content to provide accurate, citation-backed responses.
+The **DOE Oracle LLM** is an intelligent research assistant built using **Retrieval-Augmented Generation (RAG)**. It answers questions about combinatorial testing using only Dr. Wong’s published research papers. The system includes:
 
-### Key Features
-- **Research-Grounded Responses** - Only answers based on the provided research papers
-- **Citation Support** - Every response includes source citations with page numbers
-- **Custom CombinatorialExpert Model** - Specialized for combinatorial testing domain
-- **Modern Web Interface** - Clean, responsive React frontend
-- **Fast Performance** - Optimized for quick responses
+- A custom fine-tuned **CombinatorialExpert** model
+- A vector database created from the research PDFs
+- A Flask backend + React frontend
+- Accurate, citation-backed responses pulled directly from indexed papers
 
----
-
-## Quick Start Guide
-
-### Prerequisites
-
-Before you begin, ensure you have:
-- **Python 3.8+** installed
-- **Git** installed
-- **Windows, macOS, or Linux** (these instructions cover all platforms)
+## Key Features
+- **Research-Grounded Answers** — Only uses provided research papers
+- **Automatic Citations** — Includes page numbers and sources
+- **Specialized Expert Model** — Tuned for combinatorial testing
+- **Fast Local Inference** — Runs on your machine using Ollama
+- **Modern UI** — React frontend with smooth interaction
 
 ---
 
-### 1. **Clone the Repository**
+# Quick Start Guide (UPDATED FOR FALL 2025 VERSION)
 
+## Prerequisites
+You must have:
+- **Python 3.8+**
+- **Git**
+- **Node.js + npm**
+- **Ollama installed**
+- Works on Windows, macOS, or Linux
+
+---
+
+# 1. Clone the Updated Repository
 ```bash
-git clone https://github.com/mloganu717/DOE-Oracle-LLM.git
-cd DOE-Oracle-LLM
+git clone https://github.com/ShreyaaArun/DOE-LLM-App-Fall2025.git
+cd DOE-LLM-App-Fall2025
 ```
 
 ---
 
-### 2. **Install Ollama** - **CRITICAL REQUIREMENT**
+# 2. Install Ollama (Critical Requirement)
+Download from: https://ollama.com/download
 
-The system **requires Ollama** to run the language models locally.
-
-#### **Windows:**
-1. Download from: https://ollama.com/download
-2. Run the installer
-3. Ollama will start automatically
-
-#### **macOS:**
-```bash
-# Using Homebrew (recommended)
-brew install ollama
-
-# Or download from: https://ollama.com/download
-```
-
-#### **Linux:**
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-```
-
-**Verify Installation:**
+Verify installation:
 ```bash
 ollama --version
 ```
 
 ---
 
-### 3. **Download Required Models**
-
-Pull the necessary language models (this may take several minutes):
-
+# 3. Download Required Models
 ```bash
 ollama pull llama3.2
 ollama pull nomic-embed-text
 ```
 
-**Expected Download Sizes:**
-- `llama3.2`: ~2GB
-- `nomic-embed-text`: ~274MB
-
 ---
 
-### 4. **Set Up Python Environment**
+# 4. Set Up Python Environment
 
-#### **Windows:**
-```cmd
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-venv\Scripts\activate
-```
-
-#### **macOS/Linux:**
+### macOS/Linux:
 ```bash
-# Create virtual environment
 python3 -m venv venv
-
-# Activate virtual environment
 source venv/bin/activate
 ```
 
-**You should see `(venv)` in your terminal prompt**
+### Windows:
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
 
 ---
 
-### 5. **Install Dependencies**
-
+# 5. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-**Key packages being installed:**
-- Flask (web framework)
-- LangChain (RAG system)
-- ChromaDB (vector database)
-- Ollama (model interface)
-
 ---
 
-### 6. **Create the Custom Model**
-
-This creates the specialized **CombinatorialExpert** model:
-
+# 6. NEW REQUIRED INSTALLS (Fall 2025)
+### Still inside DOE-LLM-App-Fall2025 root folder:
 ```bash
-python setup_combinatorial_model.py
-```
-
-**Expected output:**
-```
-Setting up CombinatorialExpert model for Dr. Wong's research
-============================================================
-Ollama is installed and running
-Base model llama3.2 is available
-Embedding model nomic-embed-text is available
-CombinatorialExpert model created successfully
-Setup completed successfully!
+brew install ffmpeg
+source venv/bin/activate
+pip install flask flask-cors openai-whisper torch
 ```
 
 ---
 
-### 7. **Start the Backend Server**
-
+# 7. Start Backend
 ```bash
 flask --app doe run --debug
 ```
 
-**Success indicators:**
-- You should see: `* Running on http://127.0.0.1:5000`
-- Message: `Loading existing vector store...`
-- Message: `Vector store loaded successfully.`
-
-**First-time startup:** The system will process the research papers and create a vector database. This may take 1-2 minutes on first run.
+Backend runs at:
+```
+http://127.0.0.1:5000
+```
 
 ---
 
-### 8. **Start the Frontend** (Optional but Recommended)
-
-Open a **new terminal window** and navigate to the frontend:
-
+# 8. Start Frontend (Updated Steps)
+Go to the frontend folder:
 ```bash
 cd doe-frontend
 npm install
+npm install lottie-react
 npm run dev
 ```
 
-The frontend will be available at: http://localhost:5173
-
----
-
-## Usage
-
-### **Backend Only (API)**
-- Access the API at: http://localhost:5000
-- Test endpoint: `POST /api/search` with JSON: `{"query": "What is combinatorial testing?"}`
-
-### **Full Application (Frontend + Backend)**
-- Open your browser to: http://localhost:5173
-- Ask questions about combinatorial testing research
-- Receive answers with citations and source references
-
----
-
-## Project Structure
-
+Frontend runs at:
 ```
-DOE-Oracle-LLM/
-├── doe/                          # Backend Flask application
-├── doe-frontend/                 # React frontend
+http://localhost:5173
+```
+
+---
+
+# Usage
+
+## Backend Only
+```json
+POST /api/search
+{
+  "query": "What is combinatorial testing?"
+}
+```
+
+## Full Application
+- Open **http://localhost:5173**
+- Ask questions about combinatorial testing
+- Receive citations with page numbers
+
+---
+
+# Project Structure
+```
+DOE-LLM-App-Fall2025/
+├── doe/
+├── doe-frontend/
 ├── instance/
-│   ├── research_papers/          # Dr. Wong's research PDFs
-│   ├── vector_store/             # Processed vector database
-│   └── knowledge/                # Model configurations
-├── rag_system.py                 # Core RAG implementation
-├── requirements.txt              # Python dependencies
-└── README.md                     # This file
+│   ├── research_papers/
+│   ├── vector_store/
+│   └── knowledge/
+├── rag_system.py
+├── setup_combinatorial_model.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Troubleshooting
+# Troubleshooting
 
-### **Common Issues:**
-
-#### "Ollama not found"
-**Solution:** Ensure Ollama is installed and running:
+### Ollama Not Found
 ```bash
-ollama serve  # Start Ollama manually if needed
+ollama serve
 ```
 
-#### "Model not found: CombinatorialExpert"
-**Solution:** Re-run the model creation:
+### Model Missing
 ```bash
 python setup_combinatorial_model.py
 ```
 
-#### "Virtual environment not activated"
-**Solution:** Make sure you see `(venv)` in your prompt:
+### Virtual Environment Not Activated
 ```bash
-# Windows
-venv\Scripts\activate
-
-# macOS/Linux
 source venv/bin/activate
 ```
 
-#### "Slow responses (30+ seconds)"
-This is normal for the first few queries as the system loads. Subsequent queries should be faster (5-10 seconds).
-
 ---
 
-## Contributing
-
-When working on this project:
-
-1. **Always activate the virtual environment first**
-2. **Keep Ollama running** in the background
-3. **Test both backend and frontend** after changes
-4. **Check the terminal logs** for any errors
-
----
-
-## Support
-
-If you encounter issues:
-
-1. Check the **terminal output** for error messages
-2. Verify **Ollama is running**: `ollama list`
-3. Confirm **models are available**: Should see `CombinatorialExpert` and `llama3.2`
-4. Ensure **virtual environment is active**: Look for `(venv)` in prompt
-
----
-
-## Success Checklist
-
-- [ ] Ollama installed and running
-- [ ] Models downloaded (`llama3.2`, `nomic-embed-text`)
+# Success Checklist
+- [ ] Ollama installed
+- [ ] Models downloaded
 - [ ] CombinatorialExpert model created
-- [ ] Virtual environment activated
-- [ ] Dependencies installed
-- [ ] Backend server running on port 5000
-- [ ] Can ask questions and receive research-based answers
+- [ ] Virtual environment active
+- [ ] Backend running on port 5000
+- [ ] Frontend running on port 5173
 
-**If all items are checked, you're ready to explore combinatorial testing research with the DOE Oracle!**
+<img width="432" height="640" alt="image" src="https://github.com/user-attachments/assets/45247c11-928b-4843-8016-679d1fecea58" />
